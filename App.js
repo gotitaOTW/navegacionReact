@@ -1,57 +1,66 @@
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Button, TextInput, Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Button, TextInput, Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { useNavigation, NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { use } from 'react';
 
 import { Ionicons } from '@expo/vector-icons';//iconos
+import { SafeAreaView } from 'react-native';
 
 
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
+    <NavigationContainer>
       <MisTabs />
-    </View>
+    </NavigationContainer>
   );
 }
 
-const stackHomeScreen = createNativeStackNavigator();
-const stackBuscador = createNativeStackNavigator();
-const stackTienda=createNativeStackNavigator();
-const stackPerfil=createNativeStackNavigator();
+const StackHomeScreen = createNativeStackNavigator();
+const StackBuscador = createNativeStackNavigator();
+const StackTienda=createNativeStackNavigator();
+const StackPerfil=createNativeStackNavigator();
 
 const stackHomeScreenNav = () => {
-return(<stackHomeScreen.navigator>
-    <stackHomeScreen.Screen name="Home1" component={Home1}/>
-    <stackHomeScreen.Screen name="Home2" component={Home2}/>
-  </stackHomeScreen.navigator>)
-}
+return(
+<StackHomeScreen.Navigator>
+    <StackHomeScreen.Screen name="Home1" component={Home1}/>
+    <StackHomeScreen.Screen name="Estadísticas" component={Home2}/>
+  </StackHomeScreen.Navigator>)
+} 
 
 const stackBuscadorNav=()=>{
   return(
-    <stackBuscador.navigator>
-      <stackBuscador.Screen name="buscador1" component={buscador1}/>
-      <stackBuscador.Screen name="buscador2" component={buscador2}/>
-    </stackBuscador.navigator>
+    <StackBuscador.Navigator>
+      <StackBuscador.Screen name="Buscador" component={buscador1}/>
+      <StackBuscador.Screen name="Resultados" component={buscador2}/>
+    </StackBuscador.Navigator>
   )
 }
 const stackTiendaNav=()=>{
-
+return(
+  <SafeAreaView>
+    <Text>Tienda</Text>
+  </SafeAreaView>
+)
 }
 
 const stackPerfilNav = () =>{
-
+  return(
+    <SafeAreaView>
+      <Text>Perfil</Text>
+    </SafeAreaView>
+  )
 }
 
 const Home1 = () =>{
   const navigation=useNavigation();
   return(
     <View>
-        <Text>Home</Text>
-        <Button title="Ver mis estadísticas" onPress={()=>navigation.navigate('Home2')}/>
-        
+        <Text>Holis</Text>
+        <Button title="Ver mis estadísticas" onPress={()=>navigation.navigate('Home')}/>
     </View>
   )
 }
@@ -60,7 +69,7 @@ const Home2 = () => {
   return(
     <View>
       <Text>Estadísticas</Text>
-      <Image source={require('./assets/stats.jpg')}></Image>
+      <Image source={require('./assets/stats.jpg')}/>
     </View>
   )
 }
@@ -71,26 +80,39 @@ const buscador1=()=>{
   return(
     <SafeAreaView>
       <Text>Buscador</Text>
-      <TextInput
+      <View style={styles.buscador}>
+        <TextInput
         placeholder='Ingrese el nombre del producto...'
         onChangeText={NameChangeHandler}
         value={nombreProducto}
+        style={styles.buscadorInput}
       />
-      <TouchableOpacity onPress{()=>nav.navigate('buscador2',{nombreProducto})}>
-      <Ionicons  size={24} color="black" name="search"></Ionicons >
+      <TouchableOpacity onPress={()=>nav.navigate('Resultados',{nombreProducto})}>
+      <Ionicons size={24} color="black" name="search"></Ionicons>
       </TouchableOpacity>
+      </View>
+      
       </SafeAreaView>
   )
 }
 
-const buscador2=()=>{
-  const {nombreProducto}=routse.params;
+const buscador2=({route})=>{
+  const {nombreProducto}=route.params;
+  const nav=createNativeStackNavigator();
+  return(
+    <SafeAreaView>
+      <Text>No se encontraron resultados para "{nombreProducto}"</Text>
+      <Button title="Volver" onPress={()=>{nav.navigate('Buscador')}}/>
+    </SafeAreaView>
+    )
 }
+
+const Tab=createBottomTabNavigator();
 const MisTabs = () => {
   return(
-  <Tab.navigator>
+  <Tab.Navigator>
     <Tab.Screen
-      name="HomeScreen"
+      name="Home"
       component={stackHomeScreenNav}
     />
     <Tab.Screen
@@ -103,9 +125,9 @@ const MisTabs = () => {
     />
     <Tab.Screen
       name="perfil"
-      componet={stackPerfilNav}
+      component={stackPerfilNav}
     />
-  </Tab.navigator>
+  </Tab.Navigator>
   )
 }
 
@@ -116,4 +138,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  buscadorInput:{
+    borderWidth: 1,
+    borderColor:'black',
+    borderRadius: 5,
+    margin:5,
+    padding:10,
+},
+buscador:{
+  display:'flex',
+  justifyContent: 'space-between',
+},
 });
